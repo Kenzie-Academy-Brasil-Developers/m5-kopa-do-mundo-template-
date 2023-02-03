@@ -42,3 +42,7 @@ class TeamView(APIView):
         team_dict = model_to_dict(team)
 
         return Response(team_dict, status.HTTP_201_CREATED)
+
+
+class TeamDetailView(APIView):
+    ...
