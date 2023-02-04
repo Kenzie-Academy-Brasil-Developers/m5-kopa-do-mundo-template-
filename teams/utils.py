@@ -19,7 +19,7 @@ def data_processing(**kwargs):
     if titles < 0:
         raise NegativeTitlesError
 
-    if int_data < 1930:
+    if (int_data - 1930) % 4 != 0 or int_data < 1930:
         raise InavlidYearCupError
 
     if titles > validate_titles:
