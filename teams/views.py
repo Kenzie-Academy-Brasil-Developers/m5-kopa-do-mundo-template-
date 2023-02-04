@@ -35,7 +35,7 @@ class TeamView(APIView):
         except ImpossibleTitlesError:
             return Response(
                 {"error": "impossible to have more titles than disputed cups"},
-                status.HTTP_400_BAD_REQUEST
+                status.HTTP_400_BAD_REQUEST,
             )
 
         team = Team.objects.create(**request.data)
@@ -45,4 +45,36 @@ class TeamView(APIView):
 
 
 class TeamDetailView(APIView):
-    ...
+    def get(self, request: Request, team_id) -> Response:
+        try:
+            team = Team.objects.get(id=team_id)
+        except Team.DoesNotExist:
+            return Response({"message": "Team not found"}, status.HTTP_404_NOT_FOUND)
+
+        team_dict = model_to_dict(team)
+
+        return Response(team_dict, status.HTTP_200_OK)
+
+    def patch(self, request: Request, team_id):
+        try:
+            team = Team.objects.get(id=team_id)
+        except Team.DoesNotExist:
+            return Response({"message": "Team not found"}, status.HTTP_404_NOT_FOUND)
+
+        for key, values in request.data.items():
+            setattr(team, key, values)
+
+        team.save()
+        team_dict = model_to_dict(team)
+
+        return Response(team_dict, status.HTTP_200_OK)
+
+    def delete(self, request: Request, team_id):
+        try:
+            team = Team.objects.get(id=team_id)
+        except Team.DoesNotExist:
+            return Response({"message": "Team not found"}, status.HTTP_404_NOT_FOUND)
+
+        team.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
